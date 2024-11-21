@@ -102,7 +102,7 @@
 			},
 			{
 				"internalType": "uint32",
-				"name": "manucaftureDate",
+				"name": "manufacatureDate",
 				"type": "uint32"
 			},
 			{
@@ -143,7 +143,7 @@
 					},
 					{
 						"internalType": "uint32",
-						"name": "manucaftureDate",
+						"name": "manufacatureDate",
 						"type": "uint32"
 					},
 					{
@@ -199,7 +199,7 @@
 					},
 					{
 						"internalType": "uint32",
-						"name": "manucaftureDate",
+						"name": "manufacatureDate",
 						"type": "uint32"
 					},
 					{
@@ -255,7 +255,7 @@
 					},
 					{
 						"internalType": "uint32",
-						"name": "manucaftureDate",
+						"name": "manufacatureDate",
 						"type": "uint32"
 					},
 					{
