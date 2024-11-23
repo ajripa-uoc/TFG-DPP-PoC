@@ -7,8 +7,16 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 
+# Helper function for date validation
+def validate_date(value):
+    try:
+        # Parse the date string
+        return int(datetime.strptime(value, '%Y-%m-%d').timestamp())
+    except ValueError:
+        raise ValueError("Incorrect date format, should be YYYY-MM-DD")
+
 # Initialize Flask-RESTx
-api = Api(app, version="1.0", title="DPP API", description="API for managing Digital Product Passports", doc="/docs")
+api = Api(app, version="1.0", title="Digital Product Passport API", description="API for managing Digital Product Passports", doc="/docs", prefix="/api")
 
 # Namespace for DPP
 dpp_ns = api.namespace("dpp", description="Operations related to Digital Product Passports")
@@ -21,8 +29,13 @@ dpp_model = api.model("Digital Product Password", {
     "manufactureDate": fields.String(required=True, description="Manufacture date in YYYY-MM-DD format")
 })
 
-update_dpp_model = api.model("Updat DPP", {
-    "id": fields.Integer(required=True, description="Unique Identifier for the DPP"),
+# Response model for CreateDPP
+dpp_response_model = api.model("DPP Response", {
+   "dppId": fields.String(description="DPP identifier returned by the smart contract")
+})
+
+update_dpp_model = api.model("Update DPP", {
+    "dppId": fields.Integer(required=True, description="Unique Identifier for the DPP"),
     "companyName": fields.String(required=True, description="Company Name"),
     "productType": fields.String(required=True, description="Type of Product"),
     "productDetail": fields.String(required=True, description="Details about the product"),
@@ -40,12 +53,12 @@ transaction_response = api.model("Transaction Response", {
 
 @dpp_ns.route("/history")
 class DPPHistory(Resource):
-    @api.doc(params={"id": "Unique Identifier for the DPP"})
+    @api.doc(params={"dppId": "Unique Identifier for the DPP"})
     def get(self):
         """Get the history of a DPP by its ID"""
-        dpp_id = request.args.get("id")
+        dpp_id = request.args.get("dppId")
         if not dpp_id:
-            api.abort(400, "Missing 'id' query parameter")
+            api.abort(400, "Missing 'dppId' query parameter")
         try:
             dpp = get_dpp_history(int(dpp_id))
             return jsonify(dpp)
@@ -55,12 +68,12 @@ class DPPHistory(Resource):
 
 @dpp_ns.route("/first")
 class DPPFirst(Resource):
-    @api.doc(params={"id": "Unique Identifier for the DPP"})
+    @api.doc(params={"dppId": "Unique Identifier for the DPP"})
     def get(self):
         """Get the first record of a DPP by its ID"""
-        dpp_id = request.args.get("id")
+        dpp_id = request.args.get("dppId")
         if not dpp_id:
-            api.abort(400, "Missing 'id' query parameter")
+            api.abort(400, "Missing 'dppId' query parameter")
         try:
             dpp = get_dpp_first(int(dpp_id))
             return jsonify(dpp)
@@ -70,12 +83,12 @@ class DPPFirst(Resource):
 
 @dpp_ns.route("/last")
 class DPPLast(Resource):
-    @api.doc(params={"id": "Unique Identifier for the DPP"})
+    @api.doc(params={"dppId": "Unique Identifier for the DPP"})
     def get(self):
         """Get the last record of a DPP by its ID"""
-        dpp_id = request.args.get("id")
+        dpp_id = request.args.get("dppId")
         if not dpp_id:
-            api.abort(400, "Missing 'id' query parameter")
+            api.abort(400, "Missing 'dppId' query parameter")
         try:
             dpp = get_dpp_last(int(dpp_id))
             return jsonify(dpp)
@@ -89,14 +102,17 @@ class CreateDPP(Resource):
     def post(self):
         """Create a new DPP"""
         json_data = request.get_json()
+
+        # Convert date string to timestamp
+        manufactureTimestamp = validate_date(json_data["manufactureDate"])
         try:
             dpp = add_dpp(
                 json_data["companyName"],
                 json_data["productType"],
                 json_data["productDetail"],
-                json_data["manufactureDate"]
+                manufactureTimestamp
             )
-            return jsonify(dpp), 201
+            return {"dppId": str(dpp)}, 200
         except Exception as e:
             api.abort(500, str(e))
 
@@ -108,22 +124,25 @@ class UpdateDPP(Resource):
     def put(self):
         """Update an existing DPP"""
         json_data = request.get_json()
+
+        # Convert date string to timestamp
+        manufactureTimestamp = validate_date(json_data["manufactureDate"])
         try:
             dpp = update_dpp(
-                int(json_data["id"]),
+                int(json_data["dppId"]),
                 json_data["companyName"],
                 json_data["productType"],
                 json_data["productDetail"],
-                json_data["manufactureDate"]
+                manufactureTimestamp
             )
             if dpp:
-                return jsonify({
+                return {
                     'status': 'success',
                     'transaction': {
                         'transaction_hash': dpp['transactionHash'].hex(),
                         'block_number': dpp['blockNumber']
                     }
-                })
+                }, 200
             else:
                 return jsonify({"status": "error", "error": "Transaction failed"}), 400
         except Exception as e:

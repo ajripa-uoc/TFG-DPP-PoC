@@ -44,7 +44,7 @@ def add_dpp(companyName, productType, productDetail, manufactureDate):
         gas_price = web3.eth.gas_price
 
         # create transaction
-        tx = contract.functions.addDPP(companyName, productType, productDetail, int(manufactureDate)).build_transaction({'nonce': nonce,'from': public_key, 'gas': 250000,'gasPrice': gas_price})
+        tx = contract.functions.addDPP(companyName, productType, productDetail, manufactureDate).build_transaction({'nonce': nonce,'from': public_key, 'gas': 250000,'gasPrice': gas_price})
 
         # sign and send transaction
         signed_tx = web3.eth.account.sign_transaction(tx, private_key)
@@ -57,7 +57,7 @@ def add_dpp(companyName, productType, productDetail, manufactureDate):
         logs = contract.events.DPPAdded().process_receipt(receipt)
         dpp_identifier = logs[0]['args']['uniqueIdentifier']
 
-        return {"dpp_identifier": dpp_identifier}
+        return dpp_identifier
 
     except Exception as e:
         print("Error ocurred: ", e)
@@ -73,7 +73,7 @@ def update_dpp(dpp_identifier, companyName, productType, productDetail, manufact
         gas_price = web3.eth.gas_price
 
         # create transaction
-        tx = contract.functions.updateDPP(dpp_identifier, companyName, productType, productDetail, int(manufactureDate)).build_transaction({'nonce': nonce,'from': public_key, 'gas': 250000,'gasPrice': gas_price})
+        tx = contract.functions.updateDPP(dpp_identifier, companyName, productType, productDetail, manufactureDate).build_transaction({'nonce': nonce,'from': public_key, 'gas': 250000,'gasPrice': gas_price})
 
     # sign transaction
         signed_tx = web3.eth.account.sign_transaction(tx, private_key)
