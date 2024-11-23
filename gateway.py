@@ -31,8 +31,8 @@ def get_dpp_last():
 def create_dpp():
     json_data = request.get_json()
     dpp = add_dpp(json_data["companyName"], json_data["productType"], json_data["productDetail"], json_data["manufactureDate"])
-    print(dpp)
-    return "success"
+    print(dpp,flush=True)
+    return jsonify(dpp)
 
 @app.route("/update_dpp", methods=["POST"])
 def update_dpp_web():

@@ -3,13 +3,14 @@ import json, time
 import os
 from dotenv import load_dotenv
 
-global contract, PRIVATE_KEY, PUBLIC_KEY, abi, nonce
+global contract, private_key, public_key, abi, nonce
 
 # Initialize variables
 node_url = os.getenv('NETWORK_URL', 'http://127.0.0.1:8545')
-PRIVATE_KEY = os.getenv('PRIVATE_KEY', "private key")
-PUBLIC_KEY = os.getenv('PUBLIC_KEY', "public key")
-contract_address = os.getenv('CONTRACT_ADDRESS', "contract address")
+contract_address = os.getenv('CONTRACT_ADDRESS')
+private_key = os.getenv('PRIVATE_KEY')
+public_key = os.getenv('PUBLIC_KEY')
+chain_id = os.getenv('CHAIN_ID')
 
 # Create the node connection
 web3 = Web3(Web3.HTTPProvider(node_url))
@@ -35,34 +36,47 @@ def get_dpp_last(dpp_identifier):
     return dpp
 
 def add_dpp(companyName, productType, productDetail, manufactureDate):
-    # get nonce
-    nonce = web3.eth.get_transaction_count(PUBLIC_KEY)
-    # create transaction
-    tx = contract.functions.addDPP(companyName, productType, productDetail, int(manufactureDate)).buildTransaction({'nonce': nonce,'from': PUBLIC_KEY, 'gas': 250000,'gasPrice': 1000000, 'chainId': 1337})
-    # sign transaction
-    signed_tx = web3.eth.account.sign_transaction(tx, PRIVATE_KEY)
-    # send transaction
-    tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
-    print(tx_hash)
-    # get receipt
-    # tx_receipt = web3.eth.waitForTransactionReceipt(tx_hash)
-    # print(tx_receipt)
-    # get logs
-    receipt = web3.eth.get_transaction_receipt(tx_hash)
-    print(receipt)
-    logs = web3.eth.get_logs({'fromBlock': receipt['blockNumber'], 'toBlock': receipt['blockNumber'], 'address': receipt['to']})
-    print(logs)
+    try:
+        # get nonce
+        nonce = web3.eth.get_transaction_count(public_key)
 
-    return receipt
+        # get current gas price
+        gas_price = web3.eth.gas_price
+
+        # create transaction
+        tx = contract.functions.addDPP(companyName, productType, productDetail, int(manufactureDate)).build_transaction({'nonce': nonce,'from': public_key, 'gas': 250000,'gasPrice': gas_price})
+
+        # sign and send transaction
+        signed_tx = web3.eth.account.sign_transaction(tx, private_key)
+        tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
+        print("Transaction hash", tx_hash,flush=True)
+        # get receipt
+        # tx_receipt = web3.eth.waitForTransactionReceipt(tx_hash)
+        # print(tx_receipt)
+
+        # get recepit
+        receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
+        print("Receipt:", receipt, flush=True)
+
+        # get dpp identifier from event
+        #logs = web3.eth.get_logs({'fromBlock': receipt['blockNumber'], 'toBlock': receipt['blockNumber'], 'address': contract.address})
+        logs = contract.events.DPPAdded().process_receipt(receipt)
+        dpp_identifier = logs[0]['args']['uniqueIdentifier']
+
+        return {"dpp_identifier": dpp_identifier}
+
+    except Exception as e:
+        print("Error ocurred: ", e)
+        raise e
 
 #update dpp with same add_dpp values plus dpp_identifier
 def update_dpp(dpp_identifier, companyName, productType, productDetail, manufactureDate):
     # get nonce
-    nonce = web3.eth.getTransactionCount(PUBLIC_KEY)
+    nonce = web3.eth.getTransactionCount(public_key)
     # create transaction
-    tx = contract.functions.updateDPP(dpp_identifier, companyName, productType, productDetail, int(manufactureDate)).buildTransaction({'nonce': nonce,'from': PUBLIC_KEY, 'gas': 250000,'gasPrice': 1000000})
+    tx = contract.functions.updateDPP(dpp_identifier, companyName, productType, productDetail, int(manufactureDate)).buildTransaction({'nonce': nonce,'from': public_key, 'gas': 250000,'gasPrice': 1000000})
     # sign transaction
-    signed_tx = web3.eth.account.sign_transaction(tx, PRIVATE_KEY)
+    signed_tx = web3.eth.account.sign_transaction(tx, private_key)
     # send transaction
     tx_hash = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
     print(tx_hash)
