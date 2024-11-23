@@ -80,16 +80,11 @@ def update_dpp(dpp_identifier, companyName, productType, productDetail, manufact
 
         # send transaction
         tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
-        print(tx_hash)
 
         # get receipt
-        tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
+        receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
 
-        # get dpp identifier from event
-        logs = contract.events.DPPAdded().process_receipt(receipt)
-        dpp_identifier = logs[0]['args']['uniqueIdentifier']
-
-        return {"dpp_identifier": dpp_identifier}
+        return receipt
 
     except Exception as e:
         print("Error ocurred: ", e)

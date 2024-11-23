@@ -62,7 +62,19 @@ def create_dpp():
 def update_dpp_web():
     json_data = request.get_json()
     dpp = update_dpp(int(json_data["id"]), json_data["companyName"], json_data["productType"], json_data["productDetail"], json_data["manufactureDate"])
-    return jsonify(dpp), 200
+    if dpp:  # Check if transaction was successful
+        return jsonify({
+            'status': 'success',
+            'transaction': {
+                'transaction_hash': dpp['transactionHash'].hex(),
+                'block_number': dpp['blockNumber']
+            }
+        }), 200
+    else:
+        return jsonify({
+            'status': 'error',
+            'error': 'Transaction failed'
+        }), 400
 
 # Health check endpoint
 @app.route("/healthz", methods=["GET"])
