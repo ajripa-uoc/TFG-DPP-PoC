@@ -9,38 +9,62 @@ CORS(app)
 #
 # These are the endpoints for the frontend to call, but in real project data will come IoT devices and will be processed
 #
-@app.route("/get_dpp_history", methods=["POST"])
+
+# Get the dpp history by dpp_id
+@app.route("/api/dpp/history", methods=["GET"])
 def get_dpp_history_by_id():
-    json_data = request.get_json()
-    dpp = get_dpp_history(json_data["id"])
-    return jsonify(dpp)
+    # Extract the dpp_id from the query parameters
+    dpp_id = request.args.get("id")
 
-@app.route("/get_dpp_first", methods=["POST"])
-def get_dpp_first():
-    json_data = request.get_json()
-    dpp = get_dpp_first(json_data["id"])
-    return jsonify(dpp)
+    # If the dpp_id is missing, return an error
+    if not dpp_id:
+        return jsonify({"error": "Missing 'id' query parameter"}), 400
 
-@app.route("/get_dpp_last", methods=["POST"])
-def get_dpp_last():
-    json_data = request.get_json()
-    dpp = get_dpp_last(json_data["id"])
-    return jsonify(dpp)
+    # Call the get_dpp_history function from main_functions.py
+    dpp = get_dpp_history(int(dpp_id))
+    return jsonify(dpp), 200
 
-@app.route("/create_dpp", methods=["POST"])
+# Get the first dpp by dpp_id
+@app.route("/api/dpp/first", methods=["GET"])
+def get_dpp_first_by_id():
+    # Extract the dpp_id from the query parameters
+    dpp_id = request.args.get("id")
+
+    # If the dpp_id is missing, return an error
+    if not dpp_id:
+        return jsonify({"error": "Missing 'id' query parameter"}), 400
+
+    dpp = get_dpp_first(int(dpp_id))
+    return jsonify(dpp), 200
+
+# Get the last dpp by dpp_id
+@app.route("/api/dpp/last", methods=["GET"])
+def get_dpp_last_by_id():
+    # Extract the dpp_id from the query parameters
+    dpp_id = request.args.get("id")
+
+    # If the dpp_id is missing, return an error
+    if not dpp_id:
+        return jsonify({"error": "Missing 'id' query parameter"}), 400
+
+    dpp = get_dpp_last(int(dpp_id))
+    return jsonify(dpp), 200
+
+# Create a new dpp
+@app.route("/api/dpp", methods=["POST"])
 def create_dpp():
     json_data = request.get_json()
     dpp = add_dpp(json_data["companyName"], json_data["productType"], json_data["productDetail"], json_data["manufactureDate"])
-    print(dpp,flush=True)
-    return jsonify(dpp)
+    return jsonify(dpp), 200
 
-@app.route("/update_dpp", methods=["POST"])
+# Update an existing dpp
+@app.route("/api/dpp/update", methods=["PUT"])
 def update_dpp_web():
     json_data = request.get_json()
-    dpp = update_dpp(json_data["dpp_identifier"], json_data["companyName"], json_data["productType"], json_data["productDetail"], json_data["manufactureDate"])
-    print(dpp)
-    return "success"
+    dpp = update_dpp(int(json_data["id"]), json_data["companyName"], json_data["productType"], json_data["productDetail"], json_data["manufactureDate"])
+    return jsonify(dpp), 200
 
+# Health check endpoint
 @app.route("/healthz", methods=["GET"])
 def health_check():
    return jsonify({"status": "healthy"}), 200

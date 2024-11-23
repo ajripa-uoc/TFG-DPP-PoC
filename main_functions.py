@@ -49,17 +49,11 @@ def add_dpp(companyName, productType, productDetail, manufactureDate):
         # sign and send transaction
         signed_tx = web3.eth.account.sign_transaction(tx, private_key)
         tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
-        print("Transaction hash", tx_hash,flush=True)
-        # get receipt
-        # tx_receipt = web3.eth.waitForTransactionReceipt(tx_hash)
-        # print(tx_receipt)
 
         # get recepit
         receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
-        print("Receipt:", receipt, flush=True)
 
         # get dpp identifier from event
-        #logs = web3.eth.get_logs({'fromBlock': receipt['blockNumber'], 'toBlock': receipt['blockNumber'], 'address': contract.address})
         logs = contract.events.DPPAdded().process_receipt(receipt)
         dpp_identifier = logs[0]['args']['uniqueIdentifier']
 
@@ -71,18 +65,33 @@ def add_dpp(companyName, productType, productDetail, manufactureDate):
 
 #update dpp with same add_dpp values plus dpp_identifier
 def update_dpp(dpp_identifier, companyName, productType, productDetail, manufactureDate):
-    # get nonce
-    nonce = web3.eth.getTransactionCount(public_key)
-    # create transaction
-    tx = contract.functions.updateDPP(dpp_identifier, companyName, productType, productDetail, int(manufactureDate)).buildTransaction({'nonce': nonce,'from': public_key, 'gas': 250000,'gasPrice': 1000000})
-    # sign transaction
-    signed_tx = web3.eth.account.sign_transaction(tx, private_key)
-    # send transaction
-    tx_hash = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
-    print(tx_hash)
-    # get receipt
-    tx_receipt = web3.eth.waitForTransactionReceipt(tx_hash)
-    print(tx_receipt)
-    return tx_receipt
+    try:
+        # get nonce
+        nonce = web3.eth.get_transaction_count(public_key)
 
+        # get current gas price
+        gas_price = web3.eth.gas_price
+
+        # create transaction
+        tx = contract.functions.updateDPP(dpp_identifier, companyName, productType, productDetail, int(manufactureDate)).build_transaction({'nonce': nonce,'from': public_key, 'gas': 250000,'gasPrice': gas_price})
+
+    # sign transaction
+        signed_tx = web3.eth.account.sign_transaction(tx, private_key)
+
+        # send transaction
+        tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
+        print(tx_hash)
+
+        # get receipt
+        tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
+
+        # get dpp identifier from event
+        logs = contract.events.DPPAdded().process_receipt(receipt)
+        dpp_identifier = logs[0]['args']['uniqueIdentifier']
+
+        return {"dpp_identifier": dpp_identifier}
+
+    except Exception as e:
+        print("Error ocurred: ", e)
+        raise e
 
