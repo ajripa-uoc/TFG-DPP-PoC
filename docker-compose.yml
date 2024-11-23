@@ -1,0 +1,51 @@
+services:
+  ganache:
+    image: trufflesuite/ganache
+    ports:
+      - 8545:8545
+    command:
+     # Create 10 accounts with the specified mnemonic to ensure the same accounts are created each time
+     - --mnemonic
+     - "wagon stock blossom agree deep blue whale umbrella penalty grace silk abstract"
+     - --accounts
+     - "10"
+
+  migrations:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM node
+        WORKDIR /app
+        RUN npm install -g truffle
+        COPY . .
+        RUN chmod +x migrations.sh
+        CMD ["./migrations.sh"]
+    depends_on:
+      - ganache
+    environment:
+      - ENV=development
+      - NETWORK_URL=http://ganache:8545
+    # Mount the .env file and the build/contracts directory
+    # This is necessary to ensure the migrations script modifies the build/contracts directory and the env file
+    # Later, the API container will use the build/contracts directory and the env file to interact with the smart contract
+    volumes:
+      - .env:/app/.env
+      - ./build/contracts:/app/build/contracts
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+     - 80:5000
+    depends_on:
+      - migrations
+    environment:
+      - ENV=development
+      - NETWORK_URL=http://ganache:8545
+      # Public and private keys based on the mnemonic. These ensure the same accounts are created each time
+      - PUBLIC_KEY=0x287A121d910E8481a352f56AF124665F11798F45
+      - PRIVATE_KEY=0xdf326b82e7764e7cc10e1036c3efda7da3bc9676955f1d9bb00a5e99c255322f
+    volumes:
+      - .env:/app/.env
+      - ./build/contracts:/app/build/contracts
