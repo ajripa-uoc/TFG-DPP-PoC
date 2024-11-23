@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 global contract, private_key, public_key, abi, nonce
 
 # Initialize variables
+load_dotenv()
 node_url = os.getenv('NETWORK_URL', 'http://127.0.0.1:8545')
 contract_address = os.getenv('CONTRACT_ADDRESS')
 private_key = os.getenv('PRIVATE_KEY')
