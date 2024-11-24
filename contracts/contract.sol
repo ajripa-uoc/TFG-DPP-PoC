@@ -47,8 +47,8 @@ contract DigitalProductPassport {
         return false;
     }
     // Function to create a uniqueIdentifier value
-    function createUniqueIdentifier() internal returns (uint256) {
-        return uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty, msg.sender))) % MAX_INT;
+    function createUniqueIdentifier() internal view returns (uint256) {
+        return uint256(keccak256(abi.encodePacked(block.timestamp, block.prevrandao, msg.sender))) % MAX_INT;
     }
 
     // Event to be emitted when a DPP is added to the dppList
@@ -83,7 +83,8 @@ contract DigitalProductPassport {
         return uniqueIdentifier;
     }
 
-    function mergeDPP(string memory companyName, string memory productType, string memory productDetail, uint32 manufactureDate,  uint256[] memory mergerIdentifiers) public returns (uint256) {
+    //function mergeDPP(string memory companyName, string memory productType, string memory productDetail, uint32 manufactureDate,  uint256[] memory mergerIdentifiers) public returns (uint256) {
+    function mergeDPP(string memory companyName, string memory productType, string memory productDetail, uint32 manufactureDate) public returns (uint256) {
         // Generate a uniqueIdentifier
         uint256 uniqueIdentifier = createUniqueIdentifier();
 

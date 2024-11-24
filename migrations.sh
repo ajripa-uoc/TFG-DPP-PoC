@@ -12,8 +12,8 @@ if [ "$ENV" == "development" ]; then
     echo "Compiling contracts..."
     truffle compile || { echo "Truffle compile failed"; exit 1; }
 
-    #echo "Running tests..."
-    #truffle test || { echo "Truffle test failed"; exit 1; }
+    echo "Running tests..."
+    truffle test || { echo "Truffle test failed"; exit 1; }
 
     echo "Migrating contracts..."
     truffle migrate || { echo "Truffle migrate failed"; exit 1; }
