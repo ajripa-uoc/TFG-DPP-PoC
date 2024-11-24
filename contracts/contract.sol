@@ -48,7 +48,7 @@ contract DigitalProductPassport {
     }
     // Function to create a uniqueIdentifier value
     function createUniqueIdentifier() internal view returns (uint256) {
-        return uint256(keccak256(abi.encodePacked(block.timestamp, block.prevrandao, msg.sender))) % MAX_INT;
+        return uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty, msg.sender))) % MAX_INT;
     }
 
     // Event to be emitted when a DPP is added to the dppList
