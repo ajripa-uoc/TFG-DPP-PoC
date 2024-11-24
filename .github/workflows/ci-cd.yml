@@ -39,9 +39,8 @@ jobs:
           node-version: '18'
           cache: npm
 
-      - name: Install dependencies
+      - name: Install truffle
         run: |
-          npm install
           npm install -g truffle
 
       - name: Run Truffle migrations

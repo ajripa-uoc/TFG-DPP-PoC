@@ -23,10 +23,12 @@ ingress:
       paths:
         - path: /*
           pathType: ImplementationSpecific
+
 livenessProbe:
   path: /api/dpp/healthz
 readinessProbe:
   path: /api/dpp/healthz
+
 env:
   NETWORK_URL: https://ganache.ajripa.click
   PUBLIC_KEY: 0x287A121d910E8481a352f56AF124665F11798F45
