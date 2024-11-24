@@ -57,7 +57,7 @@ jobs:
           name: dapp-files
           path: |
             build/contracts/
-            ./.env
+            **/.env
           retention-days: 1
 
   build-and-push:
