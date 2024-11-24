@@ -5,6 +5,7 @@ services:
       - 8545:8545
     command:
      # Create 10 accounts with the specified mnemonic to ensure the same accounts are created each time
+     # It will be reused in production
      - --mnemonic
      - "wagon stock blossom agree deep blue whale umbrella penalty grace silk abstract"
      - --accounts

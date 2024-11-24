@@ -1,0 +1,34 @@
+# Values file for the tfg-truffle-pet-shop chart
+image:
+  repository: 986740191892.dkr.ecr.eu-west-1.amazonaws.com/tfg-dpp-poc
+  tag: 2024-11-17-22-13
+
+service:
+  port: 5000
+
+ingress:
+  enabled: true
+  className: alb
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/group.name: shared-public
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/backend-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-port: '3000'
+    external-dns.alpha.kubernetes.io/hostname: dpp-poc.ajripa.click
+  hosts:
+    - host: dpp-poc.ajripa.click
+      paths:
+        - path: /*
+          pathType: ImplementationSpecific
+livenessProbe:
+  path: /api/dpp/healthz
+readinessProbe:
+  path: /api/dpp/healthz
+env:
+  NETWORK_URL: https://ganache.ajripa.click
+  PUBLIC_KEY: 0x287A121d910E8481a352f56AF124665F11798F45
+  PRIVATE_KEY: 0xdf326b82e7764e7cc10e1036c3efda7da3bc9676955f1d9bb00a5e99c255322f
+
