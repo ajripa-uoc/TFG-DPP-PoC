@@ -16,17 +16,22 @@ def validate_date(value):
         raise ValueError("Incorrect date format, should be YYYY-MM-DD")
 
 # Initialize Flask-RESTx
-api = Api(app, version="1.0", title="Digital Product Passport API", description="API for managing Digital Product Passports", doc="/docs", prefix="/api")
+api = Api(app,
+        version="1.0",
+        title="Digital Product Passport API",
+        description="API for managing Digital Product Passports",
+        doc="/docs",
+        prefix="/api")
 
 # Namespace for DPP
 dpp_ns = api.namespace("dpp", description="Operations related to Digital Product Passports")
 
 # Models for Swagger (used for request/response validation)
 dpp_model = api.model("Digital Product Password", {
-    "companyName": fields.String(required=True, description="Company Name"),
-    "productType": fields.String(required=True, description="Type of Product"),
-    "productDetail": fields.String(required=True, description="Details about the product"),
-    "manufactureDate": fields.String(required=True, description="Manufacture date in YYYY-MM-DD format")
+    "companyName": fields.String(required=True, description="Company Name", example="Apple"),
+    "productType": fields.String(required=True, description="Type of Product", example="iPhone"),
+    "productDetail": fields.String(required=True, description="Details about the product", example="iPhone 12 Pro"),
+    "manufactureDate": fields.String(required=True, description="Manufacture date in YYYY-MM-DD format", example="2021-01-01")
 })
 
 # Response model for CreateDPP

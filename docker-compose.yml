@@ -9,6 +9,11 @@ services:
      - "wagon stock blossom agree deep blue whale umbrella penalty grace silk abstract"
      - --accounts
      - "10"
+     # Export the accounts to a JSON file
+     - --account_keys_path
+     - "accounts.json"
+    volumes:
+      - ./accounts.json:/app/accounts.json
 
   migrations:
     build:
