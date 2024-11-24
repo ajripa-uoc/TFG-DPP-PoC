@@ -12,4 +12,10 @@ module.exports = {
       port: 7545
     }
   },
+  compilers: {
+    solc: {
+      version: "0.8.2",
+      docker: true
+    }
+  }
 };
