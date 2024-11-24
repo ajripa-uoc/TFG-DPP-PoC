@@ -25,9 +25,11 @@ ingress:
           pathType: ImplementationSpecific
 
 livenessProbe:
-  path: /api/dpp/healthz
+  httpGet:
+    path: /api/dpp/healthz
 readinessProbe:
-  path: /api/dpp/healthz
+  httpGet:
+    path: /api/dpp/healthz
 
 env:
   NETWORK_URL: https://ganache.ajripa.click
