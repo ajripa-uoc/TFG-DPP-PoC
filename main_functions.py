@@ -11,7 +11,6 @@ node_url = os.getenv('NETWORK_URL', 'http://127.0.0.1:8545')
 contract_address = os.getenv('CONTRACT_ADDRESS')
 private_key = os.getenv('PRIVATE_KEY')
 public_key = os.getenv('PUBLIC_KEY')
-chain_id = os.getenv('CHAIN_ID')
 
 # Create the node connection
 web3 = Web3(Web3.HTTPProvider(node_url))
