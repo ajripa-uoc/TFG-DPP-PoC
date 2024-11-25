@@ -16,7 +16,7 @@ ingress:
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
     alb.ingress.kubernetes.io/backend-protocol: HTTP
-    alb.ingress.kubernetes.io/healthcheck-port: '3000'
+    alb.ingress.kubernetes.io/healthcheck-port: '5000'
     external-dns.alpha.kubernetes.io/hostname: dpp-poc.ajripa.click
   hosts:
     - host: dpp-poc.ajripa.click
