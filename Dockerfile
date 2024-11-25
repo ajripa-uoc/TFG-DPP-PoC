@@ -17,7 +17,7 @@ COPY . .
 EXPOSE 3000
 
 # Define environment variable for Flask
-ENV FLASK_APP=gateway.py
+ENV FLASK_APP=api.py
 
 # Define the command to run the application
-CMD ["python", "gateway.py"]
+CMD ["python", "api.py"]
