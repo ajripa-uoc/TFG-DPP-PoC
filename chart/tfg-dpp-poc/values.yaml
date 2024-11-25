@@ -121,3 +121,6 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Enrivonment variables to be passed to the container
+env: {}
