@@ -1,6 +1,7 @@
 from web3 import Web3
-import json, time
+import json
 import os
+
 from dotenv import load_dotenv
 
 global contract, private_key, public_key, abi, nonce
@@ -55,6 +56,7 @@ def add_dpp(companyName, productType, productDetail, manufactureDate):
 
         # get dpp identifier from event
         logs = contract.events.DPPAdded().process_receipt(receipt)
+        print(logs,flush=True)
         dpp_identifier = logs[0]['args']['uniqueIdentifier']
 
         return dpp_identifier
