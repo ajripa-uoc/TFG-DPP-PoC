@@ -1,7 +1,7 @@
 # Values file for the tfg-truffle-pet-shop chart
 image:
   repository: 986740191892.dkr.ecr.eu-west-1.amazonaws.com/tfg-dpp-poc
-  tag: 2024-11-26-18-35
+  tag: 2024-11-27-07-01
 
 service:
   port: 5000
@@ -35,5 +35,5 @@ env:
   NETWORK_URL: https://ganache.ajripa.click
   PUBLIC_KEY: 0x287A121d910E8481a352f56AF124665F11798F45
   PRIVATE_KEY: 0xdf326b82e7764e7cc10e1036c3efda7da3bc9676955f1d9bb00a5e99c255322f
-  CONTRACT_ADDRESS: 0x0eBa3748de4DDC0c47e62090c7f089fA08fB042d
+  CONTRACT_ADDRESS: 0xD401131E049744282D12e692D6b48F510Ef0a8FC
 
