@@ -5,6 +5,8 @@ on:
   #  branches: [ "main" ]
   #pull_request:
   #  branches: [ "main" ]
+  #schedule:
+  #  - cron: "0 22 * * *" # Run at 10pm UTC every day
   workflow_dispatch:
     inputs:
       network_url:
@@ -63,8 +65,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dapp-files
-          path: |
-            build/contracts/
+          path: build/contracts/
           retention-days: 1
 
   build-and-push:
@@ -79,11 +80,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Create directories
+        run: mkdir -p build/contracts/
+
       - name: Download dapp files
         uses: actions/download-artifact@v4
         with:
           name: dapp-files
-          path: .
+          path: build/contracts/
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
